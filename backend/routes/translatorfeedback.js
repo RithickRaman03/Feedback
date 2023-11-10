@@ -5,7 +5,6 @@ const pool = require("../config/database");
 
 router.get("/translatorfeedback", async (req, res) => {
   const result = await pool.query("SELECT * FROM feedbackquestions");
-  console.log(result);
   res.json(result.rows);
 });
 // router.post("/store-feedback", async (req, res) => {
@@ -21,7 +20,7 @@ router.get("/translatorfeedback", async (req, res) => {
 router.post("/store-feedback", async (req, res) => {
   try {
     const { feedback } = req.body;
-
+    console.log(feedback);
     let question_id = 1; // Initialize question_id
 
     for (const feedbackItem of feedback) {
@@ -38,7 +37,7 @@ router.post("/store-feedback", async (req, res) => {
       question_id++; // Increment question_id for the next feedback item
     }
 
-    res.json({ message: "Feedback data inserted successfully" });
+    res.status(200).json({ message: "Feedback Added successfully" });
   } catch (error) {
     console.error("Error inserting feedback data:", error);
     res

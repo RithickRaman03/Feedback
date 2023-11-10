@@ -1,7 +1,9 @@
 import React from "react";
 import { useEffect, useState } from "react";
-import axios from "axios";
+import axios, { all } from "axios";
 import Starating from "./starrating";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import Navbar from "./navbar";
 import "bootstrap";
@@ -16,22 +18,15 @@ function Topbar() {
     3: null,
     4: null,
     5: null,
-    6: "",
+    6: null,
   });
-
-  const handleCommentChange = (e) => {
-    setResponse((response) => ({
-      ...response,
-      6: e.target.value,
-    }));
-  };
 
   useEffect(() => {
     const getData = async () => {
       await axios
         .get("http://localhost:3001/translatorfeedback")
         .then((response) => {
-          console.log(response.data);
+          // console.log(response.data);
           setData(response.data);
         })
         .catch((error) => {
@@ -41,40 +36,79 @@ function Topbar() {
     getData();
   }, []);
 
-  const feedback = response;
-  console.log(feedback);
+  const handleCommentChange = (e) => {
+    setResponse((response) => ({
+      ...response,
+      6: e.target.value,
+    }));
+  };
 
   const handleSubmit = async () => {
     const feedback = {
       feedback: [
         {
+          file_id: 1,
           answer: response[1], // Use the relevant answer from your state
         },
         {
+          file_id: 1,
           answer: response[2],
         },
         {
+          file_id: 1,
           answer: response[3],
         },
         {
+          file_id: 1,
           answer: response[4],
         },
         {
+          file_id: 1,
           answer: response[5],
         },
         {
+          file_id: 1,
           answer: response[6],
         },
       ],
     };
-    await axios
-      .post("http://localhost:3001/store-feedback", feedback)
-      .then((response) => {
-        console.log(response);
-      })
-      .catch((err) => {
-        console.log(err);
+
+    const allValuesNotNull = feedback.feedback.every(
+      (item) => item.answer !== null
+    );
+    if (allValuesNotNull) {
+      await axios
+        .post("http://localhost:3001/store-feedback", feedback)
+        .then((response) => {
+          console.log(response);
+          if (response.status === 200) {
+            toast.success(`${response.data.message}`, {
+              position: "top-center",
+              autoClose: false,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "colored",
+            });
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    } else {
+      toast.error("Please fill all fields!", {
+        position: "top-center",
+        autoClose: false,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
       });
+    }
   };
   return (
     <div>
@@ -98,7 +132,7 @@ function Topbar() {
           </button>
         </div>
         <div className="gap"></div>
-        <div className=" feedbackbutton">
+        <div className="feedbackbutton">
           <button
             type="button"
             id="topbutton"
@@ -123,6 +157,17 @@ function Topbar() {
         </div>
       </div>
 
+      <ToastContainer
+        position="top-center"
+        autoClose={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        theme="colored"
+      />
+
       {/* MODAL CONTENT */}
 
       <div
@@ -146,7 +191,11 @@ function Topbar() {
 
             <div className="questionarea">
               {data.slice(0, 5).map((item) => (
-                <div className="question" key={item.id}>
+                <div
+                  className="question"
+                  id={`q${item.question_id}`}
+                  key={item.question_id}
+                >
                   <p>
                     <i>{item.question}</i>
                   </p>
@@ -169,7 +218,7 @@ function Topbar() {
 
               <div className="feedbacksubmit">
                 <button
-                  onSubmit={handleSubmit}
+                  onClick={handleSubmit}
                   id="feedsubmit"
                   data-bs-dismiss="modal"
                 >

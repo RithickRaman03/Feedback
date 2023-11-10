@@ -29,12 +29,12 @@ const Starating = ({ response, setResponse, name }) => {
   };
 
   return (
-    <div>
+    <div id="svgContainer">
       {Rating.map((Obj, index) => (
         <FaStar
           key={index}
           size={24}
-          name={name}
+          name={Obj}
           onClick={() => handleClick(index + 1, Obj, name)}
           onMouseOver={() => handleMouseOver(index + 1)}
           onMouseLeave={handleMouseLeave}
