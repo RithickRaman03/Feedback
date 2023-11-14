@@ -1,9 +1,13 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FaStar } from "react-icons/fa";
 
-const Starating = ({ response, setResponse, name }) => {
+const Starating = ({ response, submit, allDataNotNull, setResponse, name }) => {
   const [currentValue, setCurrentValue] = useState(0);
   const [hoverValue, setHoverValue] = useState(0);
+
+  useEffect(() => {
+    if (response[name] === null) setCurrentValue(0);
+  }, [submit]);
 
   const colors = {
     orange: "#FFBA5A",
@@ -13,10 +17,12 @@ const Starating = ({ response, setResponse, name }) => {
   const Rating = ["Bad", "Average", "Good", "Very Good", "Excellent"];
 
   const handleClick = (value, rate, name) => {
-    setCurrentValue(value);
+    const newValue = value === currentValue ? 0 : value;
+    setCurrentValue(newValue);
+
     setResponse((response) => ({
       ...response,
-      [name]: rate,
+      [name]: newValue > 0 ? rate : null,
     }));
   };
 
@@ -27,6 +33,8 @@ const Starating = ({ response, setResponse, name }) => {
   const handleMouseLeave = () => {
     setHoverValue(0);
   };
+
+  allDataNotNull();
 
   return (
     <div id="svgContainer">

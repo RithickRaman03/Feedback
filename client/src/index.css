@@ -211,7 +211,7 @@ flex-direction:row;
 }
 
 .feedbacksubmit{
-  margin-top: 20px;
+  margin: 20px 0px;
   display: flex;
   flex-direction: column;
   height: 30px;
@@ -233,11 +233,13 @@ flex-direction:row;
 }
 #comsec{
   display: flex;
-  width:40%;
+  width:70%;
+  height: 100%;
   margin-bottom: 10px;
+  border-radius: 10px;
   box-shadow: 0 4px 8px 0 rgb(242, 241, 241), 0 6px 20px 0 rgb(242, 241, 241); 
   border: transparent;
- 
+  padding: 5px;
 }
 #feedsubmit{
   background-color: #e6592b;
@@ -261,10 +263,10 @@ flex-direction:row;
   display: flex;
 }
 .questionarea{
-  display: flex;
+ display: flex;
  flex-direction: column;
- padding-left: 50px;
- 
+ /* padding-left: 50px; */
+ margin: 0px 50px;
 }
 
 i{

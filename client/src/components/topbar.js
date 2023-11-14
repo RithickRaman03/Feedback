@@ -1,6 +1,6 @@
 import React from "react";
 import { useEffect, useState } from "react";
-import axios, { all } from "axios";
+import axios from "axios";
 import Starating from "./starrating";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -12,6 +12,9 @@ import "bootstrap/js/dist/modal.js";
 
 function Topbar() {
   const [data, setData] = useState([]);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [comment, setComment] = useState("");
+  const [submit, setSubmit] = useState(false);
   const [response, setResponse] = useState({
     1: null,
     2: null,
@@ -21,6 +24,7 @@ function Topbar() {
     6: null,
   });
 
+  // let isSubmitted;
   useEffect(() => {
     const getData = async () => {
       await axios
@@ -36,14 +40,48 @@ function Topbar() {
     getData();
   }, []);
 
-  const handleCommentChange = (e) => {
-    setResponse((response) => ({
-      ...response,
-      6: e.target.value,
-    }));
+  const allDataNotNull = () => {
+    const allValueNotNull = Object.values(response).every(
+      (value) => value != null
+    );
+    setIsSubmitted(allValueNotNull);
   };
 
-  const handleSubmit = async () => {
+  const handleCommentChange = (e) => {
+    if (e.target.value === "") {
+      setComment("");
+      setResponse((response) => ({
+        ...response,
+        6: null,
+      }));
+      setIsSubmitted(false);
+    } else {
+      setComment(e.target.value);
+      setResponse((response) => ({
+        ...response,
+        6: e.target.value,
+      }));
+    }
+
+    allDataNotNull();
+  };
+
+  const formReset = () => {
+    setResponse({
+      1: null,
+      2: null,
+      3: null,
+      4: null,
+      5: null,
+      6: null,
+    });
+    setComment("");
+    setSubmit(!submit);
+  };
+  // console.log(response);
+  // console.log(isSubmitted);
+
+  const handleSubmit = async (e) => {
     const feedback = {
       feedback: [
         {
@@ -76,6 +114,7 @@ function Topbar() {
     const allValuesNotNull = feedback.feedback.every(
       (item) => item.answer !== null
     );
+
     if (allValuesNotNull) {
       await axios
         .post("http://localhost:3001/store-feedback", feedback)
@@ -97,6 +136,7 @@ function Topbar() {
         .catch((err) => {
           console.log(err);
         });
+      formReset();
     } else {
       toast.error("Please fill all fields!", {
         position: "top-center",
@@ -110,6 +150,9 @@ function Topbar() {
       });
     }
   };
+
+  console.log(response);
+
   return (
     <div>
       <div className="topbar">
@@ -124,7 +167,7 @@ function Topbar() {
           <button
             type="button"
             id="topbutton"
-            class="btn btn-primary"
+            className="btn btn-primary"
             data-bs-toggle="modal"
             data-bs-target="#exampleModal"
           >
@@ -136,7 +179,7 @@ function Topbar() {
           <button
             type="button"
             id="topbutton"
-            class="btn btn-primary"
+            className="btn btn-primary"
             data-bs-toggle="modal"
             data-bs-target="#exampleModal"
           >
@@ -148,7 +191,7 @@ function Topbar() {
           <button
             type="button"
             id="topbutton"
-            class="btn btn-primary"
+            className="btn btn-primary"
             data-bs-toggle="modal"
             data-bs-target="#exampleModal"
           >
@@ -170,24 +213,35 @@ function Topbar() {
 
       {/* MODAL CONTENT */}
 
-      <div
+      {/* <div
         class="modal fade"
         id="exampleModal"
         tabindex="-1"
         aria-labelledby="exampleModalLabel"
         aria-hidden="true"
+      > */}
+
+      <div
+        className="modal fade"
+        id="exampleModal"
+        tabindex="-1"
+        aria-labelledby="exampleModalLabel"
+        aria-hidden="true"
+        data-bs-backdrop="static"
+        data-bs-keyboard="false"
       >
-        <div class="modal-dialog modal-dialog modal-lg">
-          <div class="modal-content ">
-            <div class="modal-header">
+        <div className="modal-dialog modal-dialog modal-lg">
+          <div className="modal-content ">
+            <div className="modal-header">
               <button
                 type="button"
-                class="btn-close"
+                className="btn-close"
                 data-bs-dismiss="modal"
                 aria-label="Close"
+                onClick={formReset}
               ></button>
             </div>
-            <div class="modal-body"></div>
+            <div className="modal-body"></div>
 
             <div className="questionarea">
               {data.slice(0, 5).map((item) => (
@@ -201,6 +255,8 @@ function Topbar() {
                   </p>
                   <Starating
                     response={response}
+                    submit={submit}
+                    allDataNotNull={allDataNotNull}
                     setResponse={setResponse}
                     name={item.question_id}
                   />
@@ -211,19 +267,32 @@ function Topbar() {
                 <input
                   id="comsec"
                   type="text"
+                  value={comment}
                   placeholder="Enter comments"
                   onChange={handleCommentChange}
                 />
               </div>
 
-              <div className="feedbacksubmit">
-                <button
-                  onClick={handleSubmit}
-                  id="feedsubmit"
-                  data-bs-dismiss="modal"
-                >
+              {/* <div className="feedbacksubmit">
+                <button onClick={handleSubmit} id="feedsubmit">
                   Submit
                 </button>
+              </div> */}
+
+              <div className="feedbacksubmit">
+                {isSubmitted ? (
+                  <button
+                    onClick={handleSubmit}
+                    id="feedsubmit"
+                    data-bs-dismiss="modal"
+                  >
+                    Submit
+                  </button>
+                ) : (
+                  <button onClick={handleSubmit} id="feedsubmit">
+                    Submit
+                  </button>
+                )}
               </div>
             </div>
           </div>
